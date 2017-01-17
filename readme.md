@@ -1,8 +1,19 @@
-#KnockoutJS Starter#
-###Snippets and Examples from my KnockoutJS Starter Book###
+#Neighborhood Map app#
 
-[Buy Here](https://www.packtpub.com/web-development/knockoutjs-starter-instant)
+#RUN
+This application is a simple static application with dynamic javascript.
+So no Web server needed just visit index.html
 
-License: [MIT](http://www.opensource.org/licenses/mit-license.php)
 
-Dependencies: jQuery & Knockout
+Third party API's used:
+
+https://ridb.recreation.gov/
+- Parks and recreational locations and information
+
+Google maps API
+- Map api
+
+
+Dependencies: jQuery & Knockout & Bootstrap v4
+
+Enjoy
