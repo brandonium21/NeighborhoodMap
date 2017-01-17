@@ -1,6 +1,6 @@
 #Neighborhood Map app#
 
-#RUN
+###RUN
 This application is a simple static application with dynamic javascript.
 So no Web server needed just visit index.html
 
