@@ -8,122 +8,46 @@
     <title>My Neighborhood</title>
     <!-- CSS Here-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
-    <div id="wrapper" class="container">
+    <div id="wrapper" class="container-fluid">
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-12">
                     <h3>Neighborhood</h3>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for..." data-bind="value: search">
+                        <input class="search-input form-control" placeholder="Look Around..." type="text" name="q" data-bind="value: query, valueUpdate: 'keyup'">
                         <span class="input-group-btn">
-                            <div class="btn-group" role="group" aria-label="Basic example">
-                                <button class="btn btn-info" type="button" data-bind="click: filterMarkers">Search</button>
-                                <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#markerUl">Hide</button>
-                            </div>
+                            <button class="btn btn-warning hidden-lg-up" role="group" aria-label="Basic example" data-toggle="collapse" href="#markerUl">
+                                <i class="fa fa-minus" aria-hidden="true"></i>
+                            </button>
                         </span>
                     </div>
                     <div id="markerUl">
-                        <ul class="list-group" data-bind="foreach: markerItems">
-                            <li class="list-group-item">
-                                <a href="#" data-bind="text: markerName, attr: {'id': 'btn_' + markerName, 'onclick': 'openInfoWindow(' + indx + ')'}"></a>
-                            </li>
+                        <ul class="list-group" data-bind="visible:query, foreach: search">
+                            <li class="list-group-item" data-bind="text: title, click: openInfowindow"></li>
                         </ul>
                     </div>
                     <!-- /input-group -->
                 </div>
-                <div class="col-md-8 map-container">
+                <div class="col-lg-8 col-md-12 map-container">
                     <div id="map"></div>
                 </div>
             </div>
         </div>
     </div>
     <!-- JavaScript Files Here-->
+    <script src="https://use.fontawesome.com/c738b3f814.js"></script>
     <script src="./JS/knockout-2.1.0.debug.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-    <script src="./js/markersviewmodel.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-o8UqlAGShtZNfv_NBlJchnYx-RjMMZk&callback=initMap" async defer></script>
-    <script>
-    // Activates knockout.js
-    m1 = new MarkersViewModel();
-    ko.applyBindings(m1);
-    var map;
-    var markerList = [];
-
-    function openInfoWindow(indx) {
-        $(this).on('click', function() {
-            google.maps.event.trigger(markerList[indx], 'click');
-            map.setZoom(6);
-            map.panTo(markerList[indx].position);
-        });
-    };
-
-    function createInfoWindow(infoWindow, map, marker, popupContent) {
-
-        google.maps.event.addListener(marker, 'click', function() {
-            infoWindow.setContent(popupContent);
-            infoWindow.open(map, this);
-        });
-    };
-
-    function filterRec(map, filter, sites) {
-        var filteredMarkers = [];
-        var infoWindow = new google.maps.InfoWindow();
-        for (var i = 0; i < sites.length; i++) {
-            var site = sites[i];
-            var siteLoc = site['GEOJSON']['COORDINATES'];
-            var contentString = '<h6>' + site['RecAreaName'] + '</h6> \
-                                <br><blockquote>\
-                                <strong>Description:</strong>\
-                                <p>' + site['RecAreaDescription'] + '</p> <br>' +
-                '<strong>Phone:</strong>\
-                                <p>' + site['RecAreaPhone'] + '</p>' +
-                '</blockquote>';
-
-            if (site['RecAreaName'].toLowerCase().includes(filter)) {
-                var siteLatLng = new google.maps.LatLng(siteLoc[0], siteLoc[1]);
-                filteredMarkers.push({
-                    "markerName": site['RecAreaName'],
-                    "indx": i
-                });
-
-                var marker = new google.maps.Marker({
-                    position: {
-                        lat: siteLoc[1],
-                        lng: siteLoc[0]
-                    },
-                    title: site['RecAreaName'],
-                    map: map
-                });
-
-                markerList.push(marker);
-                createInfoWindow(infoWindow, map, marker, contentString);
-
-                marker.setMap(map);
-
-            }
-        }
-        return filteredMarkers;
-    };
-
-    function initMap() {
-        var illinois = {
-            lat: 39.7177196,
-            lng: -91.7473942
-        };
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 6,
-            center: illinois
-        });
-        m1.filterMarkers();
-
-    }
-    </script>
+    <script src="./js/markviewmodel.js"></script>
+    <script src="./js/errorhandling.js"></script>
+    <script onerror='handleError("Sorry! An Error occured, Refresh Page?")' src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-o8UqlAGShtZNfv_NBlJchnYx-RjMMZk&callback=initMap" async defer></script>
 </body>
 
 </html>
