@@ -54,6 +54,7 @@ var Location = function(title, lng, lat, content) {
     this.addListener = google.maps.event.addListener(self.marker, 'click', function() {
         self.bounceit();
     });
+    self.search;
 
 };
 
@@ -61,7 +62,11 @@ var Location = function(title, lng, lat, content) {
 var locationsModel = {
     locations: [],
     query: ko.observable(''),
+    counter: ko.observable(false),
+    locol: ko.observable([])
 };
+
+
 
 function get_info() {
     var url = 'https://ridb.recreation.gov/api/v1/recareas?state=IL&apikey=3601BC7452A74734BA745C617747CF75&limit=5';
@@ -79,18 +84,29 @@ function get_info() {
                                 <p>' + site['RecAreaPhone'] + '</p>' +
                     '</blockquote>';
                 locationsModel.locations.push(new Location(site['RecAreaName'], siteLoc[1], siteLoc[0], contentString));
-                //locationsModel.locations.valueHasMutated();
             };
+            console.log("ready!");
+            locationsModel.query('o');
+            //ko.applyBindings(locationsModel);
+            //eventFire(document.getElementById('search-box'), 'click');
         }).fail(function() {
         handleError('Sorry recreation data failed to load. Refresh?')
     });
+
 };
+
+
 // Search function for filtering through the list of locations based on the name of the location.
 locationsModel.search = ko.dependentObservable(function() {
     var self = this;
+    console.log(locationsModel.counter());
+    locationsModel.counter(true);
+    console.log(locationsModel.counter());
     var search = this.query().toLowerCase();
+    console.log(search);
     var filtered = ko.utils.arrayFilter(self.locations, function(location) {
         location.marker.setVisible(true);
+        console.log(location.title.toLowerCase().indexOf(search));
         return location.title.toLowerCase().indexOf(search) >= 0;
     });
     var nonfiltered = ko.utils.arrayFilter(self.locations, function(location) {
