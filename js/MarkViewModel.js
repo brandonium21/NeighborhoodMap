@@ -61,7 +61,7 @@ var Location = function(title, lng, lat, content) {
 // Contains all the locations and search function.
 var locationsModel = {
     locations: [],
-    query: ko.observable(''),
+    query: ko.observable(' '),
 };
 
 
@@ -84,6 +84,8 @@ function get_info() {
                 locationsModel.locations.push(new Location(site['RecAreaName'], siteLoc[1], siteLoc[0], contentString));
             };
             console.log("ready!");
+            locationsModel.query('');
+            //trigger = 's';
             //locationsModel.query('');
             //ko.applyBindings(locationsModel);
             //eventFire(document.getElementById('search-box'), 'click');
@@ -93,9 +95,14 @@ function get_info() {
 
 };
 
+$( document ).ready(function() {
+    
+    console.log( "ready! doc" );
+    
+});
 
 // Search function for filtering through the list of locations based on the name of the location.
-locationsModel.search = ko.dependentObservable(function() {
+locationsModel.search = ko.computed(function() {
     var self = this;
     var filtered = ko.observable([]);
     var searched = this.query().toLowerCase();
@@ -126,6 +133,7 @@ locationsModel.search = ko.dependentObservable(function() {
     console.log(filtered);
     return filtered;
 
-}, locationsModel);
+}, locationsModel).extend({ async: true, notify: 'always', deferred: true });
 
+ko.options.deferUpdates = true;
 ko.applyBindings(locationsModel);
