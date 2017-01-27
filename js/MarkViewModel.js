@@ -54,7 +54,7 @@ var Location = function(title, lng, lat, content) {
     this.addListener = google.maps.event.addListener(self.marker, 'click', function() {
         self.bounceit();
     });
-    self.search;
+    //self.search;
 
 };
 
@@ -62,8 +62,6 @@ var Location = function(title, lng, lat, content) {
 var locationsModel = {
     locations: [],
     query: ko.observable(''),
-    counter: ko.observable(false),
-    locol: ko.observable([])
 };
 
 
@@ -86,7 +84,7 @@ function get_info() {
                 locationsModel.locations.push(new Location(site['RecAreaName'], siteLoc[1], siteLoc[0], contentString));
             };
             console.log("ready!");
-            locationsModel.query('o');
+            //locationsModel.query('');
             //ko.applyBindings(locationsModel);
             //eventFire(document.getElementById('search-box'), 'click');
         }).fail(function() {
@@ -99,24 +97,35 @@ function get_info() {
 // Search function for filtering through the list of locations based on the name of the location.
 locationsModel.search = ko.dependentObservable(function() {
     var self = this;
-    console.log(locationsModel.counter());
-    locationsModel.counter(true);
-    console.log(locationsModel.counter());
-    var search = this.query().toLowerCase();
-    console.log(search);
-    var filtered = ko.utils.arrayFilter(self.locations, function(location) {
-        location.marker.setVisible(true);
-        console.log(location.title.toLowerCase().indexOf(search));
-        return location.title.toLowerCase().indexOf(search) >= 0;
-    });
-    var nonfiltered = ko.utils.arrayFilter(self.locations, function(location) {
-        return location.title.toLowerCase().indexOf(search) < 0;
-    });
-    nonfiltered.forEach(function(place) {
-        place.marker.setVisible(false);
-    });
+    var filtered = ko.observable([]);
+    var searched = this.query().toLowerCase();
+    console.log(searched);
+    
+    if (searched) {
+        console.log('filted');
+        filtered = ko.utils.arrayFilter(self.locations, function(location) {
+            location.marker.setVisible(true);
+            console.log(location.title.toLowerCase().indexOf(searched));
+            return location.title.toLowerCase().indexOf(searched) >= 0;
+        });
+        var nonfiltered = ko.utils.arrayFilter(self.locations, function(location) {
+            return location.title.toLowerCase().indexOf(searched) < 0;
+        });
+        nonfiltered.forEach(function(place) {
+            place.marker.setVisible(false);
+        });
 
-    return filtered
+    }else{
+        console.log('opening');
+        filtered = ko.utils.arrayFilter(self.locations, function(location) {
+            location.marker.setVisible(true);
+            return true;
+        });
+        console.log(filtered);
+    }
+    console.log(filtered);
+    return filtered;
+
 }, locationsModel);
 
 ko.applyBindings(locationsModel);
